@@ -31,61 +31,6 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 PAGINATION_COUNT = 3
-
-"""class MutualListView(LoginRequiredMixin, ListView):
-    
-    model = Post
-    template_name = 'blog/home.html'
-    context_object_name = 'posts'
-    ordering = ['-date_posted']
-    paginate_by = PAGINATION_COUNT
-
-    def get_context_data(self, **kwargs):
-
-        data = super().get_context_data(**kwargs)
-        dict ={}
-        mut = {}
-        all_sugg = []
-        logged_user = self.request.user.username
-        users = User.objects.all()
-        for x in users:
-            dict[x.username] = [u.follow_user.username for u in Follow.objects.filter(user=x).all()]
-        if dict[logged_user] != []:
-            sugg_list, mutuals = friend(dict,logged_user,5) 
-            for i in sugg_list:
-                all_sugg.append(User.objects.get(username = i))
-            for i in mutuals:
-                mut[User.objects.get(username = i)]=[]
-                print(mutuals[])
-                for j in mutuals[i]:                
-                    mut[User.objects.get(username = i)].append(User.objects.get(username = j))
-        else:
-            for i in range(1,6):
-                all_sugg.append(User.objects.get(id = i))
-        data['all_sugg'] = all_sugg
-        data['mut'] = mut
-        return data
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = Follow.objects.filter(user=user)
-        follows = [user]
-        friend={user.username : []}
-        for obj in qs:
-            #print("^^^^^^")
-            friend[user.username].append(obj.follow_user.username)
-            follows.append(obj.follow_user)
-        #print(Follow.objects.filter(user=user).order_by('-date')[0].follow_user)
-        print("1")
-        print(friend)
-       
-        print(follows)
-        return Post.objects.filter(author__in=follows).order_by('-date_posted')
-"""
-
-
-
-
         
 
 class PostListView(LoginRequiredMixin, ListView):
@@ -113,7 +58,6 @@ class PostListView(LoginRequiredMixin, ListView):
                 all_sugg.append(User.objects.get(username = i))
             for i in mutuals:
                 mut[User.objects.get(username = i)]=[]
-                print(mutuals[i])
                 for j in mutuals[i]:                
                     mut[User.objects.get(username = i)].append(User.objects.get(username = j))
         else:
@@ -139,18 +83,9 @@ class PostListView(LoginRequiredMixin, ListView):
         follows = [user]
         friend={user.username : []}
         for obj in qs:
-            #print("^^^^^^")
             friend[user.username].append(obj.follow_user.username)
             follows.append(obj.follow_user)
-        #print(Follow.objects.filter(user=user).order_by('-date')[0].follow_user)
-        print("1")
-        print(friend)
-       
-        print(follows)
         return Post.objects.filter(author__in=follows).order_by('-date_posted')
-
-
-
 
 
 class UserPostListView(LoginRequiredMixin, ListView):
@@ -166,7 +101,6 @@ class UserPostListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         visible_user = self.visible_user()
         logged_user = self.request.user
-        print(logged_user.username == '', file=sys.stderr)
 
         if logged_user.username == '' or logged_user is None:
             can_follow = False
@@ -268,8 +202,6 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class FollowsListView(ListView):
-    print("-----------")
-    print(ListView)
     model = Follow
     template_name = 'blog/follow.html'
     context_object_name = 'follows'
@@ -279,12 +211,6 @@ class FollowsListView(ListView):
 
     def get_queryset(self):
         user = self.visible_user()
-        
-        print(user.profile.followers )
-        print("############")
-        #print(Follow.objects.filter(user=user))
-        
-        print(Follow.objects.filter(user=user).order_by('-date')[1].follow_user)
         return Follow.objects.filter(user=user).order_by('-date')
 
     def get_context_data(self, *, object_list=None, **kwargs):
